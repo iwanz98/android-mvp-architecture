@@ -22,12 +22,12 @@ android {
     flavorDimensions "tier"
     productFlavors {
         dev {
-            buildConfigField("String", "BASE_URL", "\"https://aha-io-dev.herokuapp.com/api\"")
-            resValue "string", "app_name", "Aha.id Dev"
+            buildConfigField("String", "BASE_URL", "\"https://wanztudio.com/api\"")
+            resValue "string", "app_name", "Wanztudio Dev"
         }
         production {
-            buildConfigField("String", "BASE_URL", "\"https://aha-io-dev.herokuapp.com/api\"")
-            resValue "string", "app_name", "Aha.id"
+            buildConfigField("String", "BASE_URL", "\"https://wanztudio.com/api\"")
+            resValue "string", "app_name", "Wanztudio"
         }
     }
 

@@ -1,46 +1,66 @@
-/*
- * Copyright (C) 2017 MINDORKS NEXTGEN PRIVATE LIMITED
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://mindorks.com/license/apache-v2
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License
- */
-
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'org.greenrobot.greendao'
-apply from: '../config/quality/quality.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+
     defaultConfig {
-        applicationId "com.mindorks.framework.mvp"
+        applicationId "com.wanztudio.mvp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
-    buildTypes {
-        debug {
-            buildConfigField("String", "BASE_URL", "\"http://www.mocky.io/v2\"")
-            buildConfigField("String", "API_KEY", "\"ABCXYZ123TEST\"")
+    signingConfigs {
+        release
+    }
+
+    flavorDimensions "tier"
+    productFlavors {
+        dev {
+            buildConfigField("String", "BASE_URL", "\"https://aha-io-dev.herokuapp.com/api\"")
+            resValue "string", "app_name", "Aha.id Dev"
         }
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "BASE_URL", "\"http://www.mocky.io/v2\"")
-            buildConfigField("String", "API_KEY", "\"ABCXYZ123TEST\"")
+        production {
+            buildConfigField("String", "BASE_URL", "\"https://aha-io-dev.herokuapp.com/api\"")
+            resValue "string", "app_name", "Aha.id"
         }
     }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.dev'
+            versionNameSuffix '-dev'
+            debuggable true
+            multiDexEnabled true
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            multiDexEnabled false
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+configurations.all {
+    exclude group: 'com.android.support', module: 'support-v13'
+    resolutionStrategy.force "com.android.support:support-annotations:$supportLibraryVersion"
 }
 
 greendao {
@@ -48,55 +68,70 @@ greendao {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    // android support libraries
+    // Android support libraries
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:support-vector-drawable:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:animated-vector-drawable:$rootProject.supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constrainVersion"
 
-    // font
-    implementation "uk.co.chrisjenx:calligraphy:$rootProject.calligraphyVersion"
-
-    // network
-    implementation "com.amitshekhar.android:rx2-android-networking:$rootProject.rx2FastAndroidNetworking"
-
-    // image
-    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
-
-    // parser
-    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
-
-    // database
-    implementation "org.greenrobot:greendao:$rootProject.greenDaoVersion"
-
-    // debug database
-    debugImplementation "com.amitshekhar.android:debug-db:$rootProject.debugDBVersion"
-
-    // dependency injection
+    // Dependency injection
     implementation "com.google.dagger:dagger:$rootProject.dagger2Version"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
     compileOnly 'javax.annotation:jsr250-api:1.0'
     implementation 'javax.inject:javax.inject:1'
 
-    // reactive
+    // Reactive
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
 
-    // code generator for view
+    // Font
+    implementation "io.github.inflationx:calligraphy3:$rootProject.calligraphyVersion"
+    implementation "io.github.inflationx:viewpump:$rootProject.viewpumpVersion"
+
+    // Better spinner
+    implementation("com.weiwangcn.betterspinner:library-material:$rootProject.spinnerVersion") {
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
+
+    // Circle imageview
+    implementation "de.hdodenhof:circleimageview:$rootProject.circleImageVersion"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
+
+    // Dialog
+    implementation "com.afollestad.material-dialogs:core:$rootProject.dialogVersion"
+
+    // Network
+    implementation "com.amitshekhar.android:rx2-android-networking:$rootProject.rx2FastAndroidNetworking"
+
+    // Parser
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+
+    // Database
+    implementation "org.greenrobot:greendao:$rootProject.greenDaoVersion"
+
+    // Debug database
+    debugImplementation "com.amitshekhar.android:debug-db:$rootProject.debugDBVersion"
+
+    // Logger
+    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
+
+    // Preferences
+    implementation "com.orhanobut:hawk:$rootProject.hawkVersion"
+
+    // Code generator for view
     implementation "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
 
-    // swipe view
-    implementation "com.mindorks:placeholderview:$rootProject.placeholderviewVersion"
+    // Permission utils
+    implementation "rebus:permission-utils:$rootProject.permissionVersion"
 
-    // logger
-    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
-
-    // dependencies for local unit tests
+    // Dependencies for local unit tests
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
@@ -106,8 +141,25 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
+
+    // Crashlytics
+    implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.crashlyticsVersion") {
+        transitive = true
+    }
+
+    // Range seekbar
+    implementation "com.crystal:crystalrangeseekbar:$rootProject.seekbarVersion"
+    // Smart location
+    implementation ("io.nlopez.smartlocation:library:$rootProject.smartLocationVersion"){
+        exclude group: 'com.google.android.gms', module: 'play-services-location'
+    }
+    // Slider
+    implementation "com.ss.bannerslider:bannerslider:$rootProject.bannerVersion"
+    // Google plays service
+    implementation "com.google.android.gms:play-services-auth:$rootProject.googleVersion"
+    implementation "com.google.android.gms:play-services-location:$rootProject.googleVersion"
+    implementation "com.google.android.gms:play-services-maps:$rootProject.googleVersion"
 }
 
-configurations.all {
-    resolutionStrategy.force "com.android.support:support-annotations:$supportLibraryVersion"
-}
+// ADD THIS AT THE BOTTOM
+//apply plugin: 'com.google.gms.google-services'

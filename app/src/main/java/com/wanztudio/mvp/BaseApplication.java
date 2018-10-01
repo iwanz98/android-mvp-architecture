@@ -32,14 +32,13 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-
+        
         mApplicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this)).build();
 
         mApplicationComponent.inject(this);
 
-        AppLogger.init();
+        AppLogger.init(this);
 
         AndroidNetworking.initialize(getApplicationContext());
         if (BuildConfig.DEBUG) {

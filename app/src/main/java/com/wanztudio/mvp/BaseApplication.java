@@ -37,8 +37,8 @@ public class BaseApplication extends Application {
                 .applicationModule(new ApplicationModule(this)).build();
 
         mApplicationComponent.inject(this);
-
-        AppLogger.init(this);
+       
+        AppLogger.getInstance().init(this);
 
         AndroidNetworking.initialize(getApplicationContext());
         if (BuildConfig.DEBUG) {

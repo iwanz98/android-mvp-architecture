@@ -11,3 +11,7 @@
 \.idea/caches/
 
 app/local\.properties
+
+\.idea/codeStyles/
+
+\.idea/

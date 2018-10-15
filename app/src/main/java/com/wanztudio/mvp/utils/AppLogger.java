@@ -10,7 +10,12 @@ import timber.log.Timber;
 
 public class AppLogger {
 
-    public static void init() {
+    private static AppLogger instance = new AppLogger();
+    public static AppLogger getInstance() {
+        return instance;
+    }
+
+    public void init(Context context) {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree(){
                 //Add the line number to the tag.
@@ -21,7 +26,7 @@ public class AppLogger {
             });
         } else {
             //Release mode
-            //Fabric.with(this, new Crashlytics());
+            Fabric.with(context, new Crashlytics());
             Timber.plant(new ReleaseTree());
         }
 

@@ -65,6 +65,8 @@ public class ApiHeader {
 
         public void setKey(String key) {
             this.key = key;
+
+            auth = type + " " + key;
         }
     }
 }
